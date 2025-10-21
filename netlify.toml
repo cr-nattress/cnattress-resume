@@ -5,11 +5,8 @@
   # Build command
   command = "npm run build"
 
-  # Publish directory (Next.js output)
-  publish = ".next"
-
-  # Functions directory for serverless functions
-  functions = "netlify/functions"
+  # Publish directory - let Next.js plugin handle this
+  publish = "."
 
 # Next.js Plugin Configuration
 [[plugins]]
@@ -47,24 +44,8 @@
   [headers.values]
     Cache-Control = "no-store, no-cache, must-revalidate"
 
-# Redirect rules
-[[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/:splat"
-  status = 200
-
-# SPA fallback for client-side routing
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-  conditions = {Role = ["admin"]}
-
-# Custom error pages
-[[redirects]]
-  from = "/404"
-  to = "/404.html"
-  status = 404
+# Next.js plugin handles all routing automatically
+# No custom redirects needed for API routes or pages
 
 # Edge Functions configuration (optional)
 # Uncomment if using Netlify Edge Functions
@@ -94,17 +75,8 @@
   [context.branch-deploy.environment]
     NODE_ENV = "production"
 
-# Function settings for API routes
-[functions]
-  # Directory for Netlify Functions (if using)
-  directory = "netlify/functions"
-
-  # Node version for functions
-  node_bundler = "esbuild"
-
-  # Function timeout (default is 10s, max is 26s for free tier)
-  # API routes may need longer for AI responses
-  included_files = [".env.local"]
+# Next.js API routes are handled by the @netlify/plugin-nextjs automatically
+# No manual function configuration needed
 
 # Additional build settings
 [build.processing]
