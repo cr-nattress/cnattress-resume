@@ -1,92 +1,16 @@
 # Netlify Configuration for Chris Nattress Portfolio
 # Next.js 15 App Router with AI Integration
+#
+# Netlify auto-detects Next.js and uses the OpenNext adapter automatically.
+# Zero configuration deployment - just build command and environment.
 
 [build]
   command = "npm run build"
 
-[[plugins]]
-  package = "@netlify/plugin-nextjs"
-
-# Environment variables (these should be set in Netlify dashboard)
-# Don't put actual values here - set them in Netlify UI under Site settings > Environment variables
 [build.environment]
-  # Node version
   NODE_VERSION = "20"
 
-  # Next.js specific
-  NEXT_TELEMETRY_DISABLED = "1"
-
-# Headers for security and performance
-[[headers]]
-  for = "/*"
-  [headers.values]
-    # Security headers
-    X-Frame-Options = "DENY"
-    X-Content-Type-Options = "nosniff"
-    Referrer-Policy = "strict-origin-when-cross-origin"
-    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
-
-    # Cache control for static assets
-    Cache-Control = "public, max-age=31536000, immutable"
-
-[[headers]]
-  for = "/*.html"
-  [headers.values]
-    Cache-Control = "public, max-age=0, must-revalidate"
-
-[[headers]]
-  for = "/api/*"
-  [headers.values]
-    Cache-Control = "no-store, no-cache, must-revalidate"
-
-# Next.js plugin handles all routing automatically
-# No custom redirects needed for API routes or pages
-
-# Edge Functions configuration (optional)
-# Uncomment if using Netlify Edge Functions
-# [edge_functions]
-#   path = "/api/*"
-
-# Development settings
+# Development settings for Netlify CLI
 [dev]
   command = "npm run dev"
   port = 3000
-  targetPort = 3000
-  autoLaunch = false
-
-# Context-specific settings
-[context.production]
-  command = "npm run build"
-  [context.production.environment]
-    NODE_ENV = "production"
-
-[context.deploy-preview]
-  command = "npm run build"
-  [context.deploy-preview.environment]
-    NODE_ENV = "production"
-
-[context.branch-deploy]
-  command = "npm run build"
-  [context.branch-deploy.environment]
-    NODE_ENV = "production"
-
-# Next.js API routes are handled by the @netlify/plugin-nextjs automatically
-# No manual function configuration needed
-
-# Additional build settings
-[build.processing]
-  skip_processing = false
-
-[build.processing.css]
-  bundle = true
-  minify = true
-
-[build.processing.js]
-  bundle = true
-  minify = true
-
-[build.processing.html]
-  pretty_urls = true
-
-[build.processing.images]
-  compress = true
