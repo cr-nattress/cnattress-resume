@@ -2,11 +2,8 @@
 # Next.js 15 App Router with AI Integration
 
 [build]
-  # Build command
   command = "npm run build"
 
-# Next.js Plugin Configuration
-# The plugin handles the publish directory automatically
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
