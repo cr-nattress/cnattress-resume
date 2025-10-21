@@ -4,6 +4,63 @@ Custom skills for automating project workflows.
 
 ## Available Skills
 
+### generate-readme
+
+**Purpose**: Generate beautiful, professional, and comprehensive README.md files following industry best practices.
+
+**Use Case**: You want to create an eye-catching, modern README that makes your project unforgettable - or update an existing README to match the quality of top open-source projects.
+
+**How to Use**:
+
+```bash
+# Generate a new README for current project
+/generate-readme
+
+# Update existing README.md
+/generate-readme --update
+
+# Focus on specific aspects
+/generate-readme --focus "performance benchmarks"
+/generate-readme --focus "developer experience"
+/generate-readme --focus "enterprise security"
+```
+
+**What It Generates**:
+
+A complete README.md with:
+
+1. **Compelling Header** - Project name, tagline, badges, and table of contents
+2. **Quick Start** - Install commands and "Hello World" example that works
+3. **Usage Examples** - 3-5 practical code examples with syntax highlighting
+4. **Features** - Bulleted highlights with strategic emoji usage
+5. **Architecture** - High-level explanation of how it works
+6. **Documentation Links** - Guides, API reference, tutorials
+7. **Community & Support** - Discord, Issues, Discussions, Stack Overflow
+8. **Contributing** - Warm invitation with "good first issues" link
+9. **License** - Clear licensing and copyright
+10. **Acknowledgments** - Credits, sponsors, thanks
+
+**Key Features**:
+
+- **Intelligent Analysis**: Auto-detects project type, tech stack, and audience
+- **Visual Excellence**: Badges, code blocks, tables, and strategic emoji
+- **Professional Tone**: Friendly yet authoritative, scannable content
+- **Quality Benchmarks**: Matches Express.js, FastAPI, NestJS, HTTPie standards
+- **Mobile-Friendly**: Perfect rendering on all screen sizes
+- **TODOs for Manual Work**: Clearly marks badges, links, and screenshots to customize
+
+**Best Practices**:
+
+1. **Review and customize** - Generated README is a starting point
+2. **Add real badges** - Update placeholder URLs with actual shield.io links
+3. **Create visuals** - Add screenshots, GIFs, or diagrams where indicated
+4. **Verify examples** - Ensure code examples actually work
+5. **Update links** - Point to real documentation and community channels
+
+**Example Output Quality**: Comparable to README files from Express, Fastify, NestJS, FastAPI, HTTPie, and Ghost - the gold standard of open-source documentation.
+
+---
+
 ### generate-backlog
 
 **Purpose**: Automatically generate a complete, structured backlog from requirements documents.
