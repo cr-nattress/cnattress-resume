@@ -49,8 +49,6 @@ export default function Projects() {
     }
   ];
 
-  const categories = [...new Set(projects.map(p => p.category))];
-
   return (
     <section id="projects" className="py-20 bg-gradient-to-b from-slate-900 to-slate-800">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
