@@ -5,7 +5,9 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import About from "@/components/sections/About";
 import Experience from "@/components/sections/Experience";
 import Skills from "@/components/sections/Skills";
+import Projects from "@/components/sections/Projects";
 import Contact from "@/components/sections/Contact";
+import Footer from "@/components/Footer";
 import { ChatWidget } from "@/components/chat/ChatWidget";
 
 export default function Home() {
@@ -50,7 +52,9 @@ export default function Home() {
       <About />
       <Experience />
       <Skills />
+      <Projects />
       <Contact />
+      <Footer />
 
       {/* AI Chat Widget */}
       <ChatWidget />
