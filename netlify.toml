@@ -1,8 +1,5 @@
 # Netlify Configuration for Chris Nattress Portfolio
 # Next.js 15 App Router with AI Integration
-#
-# Netlify auto-detects Next.js and uses the OpenNext adapter automatically.
-# Zero configuration deployment - just build command and environment.
 
 [build]
   command = "npm run build"
