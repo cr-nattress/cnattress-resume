@@ -5,10 +5,8 @@
   # Build command
   command = "npm run build"
 
-  # Publish directory - let Next.js plugin handle this
-  publish = "."
-
 # Next.js Plugin Configuration
+# The plugin handles the publish directory automatically
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
