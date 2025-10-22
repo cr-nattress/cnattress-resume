@@ -1,0 +1,7 @@
+{
+  "commands": {
+    "react-audit": {
+      "description": "Analyze codebase against Next.js/React best practices and generate recommendations"
+    }
+  }
+}

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { API_ENDPOINTS } from "@/lib/constants/api";
 
 interface AnalysisResult {
   matchScore: number;
@@ -30,7 +31,7 @@ export default function JobAnalyzer() {
     setResult(null);
 
     try {
-      const response = await fetch("/api/analyze-job", {
+      const response = await fetch(API_ENDPOINTS.ANALYZE_JOB, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ jobDescription }),

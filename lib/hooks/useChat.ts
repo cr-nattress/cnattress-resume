@@ -9,6 +9,7 @@
 
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { getSessionId } from '@/lib/utils/session';
+import { API_ENDPOINTS } from '@/lib/constants/api';
 
 export interface Message {
   role: 'user' | 'assistant';
@@ -99,7 +100,7 @@ export function useChat(): UseChatReturn {
       }));
 
       // Send request to API
-      const response = await fetch('/api/chat', {
+      const response = await fetch(API_ENDPOINTS.CHAT, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

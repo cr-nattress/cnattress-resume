@@ -9,7 +9,7 @@
  * @component
  */
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { useChat } from '@/lib/hooks/useChat';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -55,19 +55,19 @@ export function ChatWidget({ initiallyMinimized = true }: ChatWidgetProps) {
     }
   }, [isOpen, isMinimized]);
 
-  const handleSend = async () => {
+  const handleSend = useCallback(async () => {
     if (!inputValue.trim() || isLoading) return;
 
     await sendMessage(inputValue);
     setInputValue('');
-  };
+  }, [inputValue, isLoading, sendMessage]);
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyPress = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSend();
     }
-  };
+  }, [handleSend]);
 
   // Suggested questions for first-time users
   const suggestedQuestions = [
