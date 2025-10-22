@@ -3,8 +3,12 @@
 import { ReactElement } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { useParallax } from "@/lib/hooks/useScrollAnimation";
 
 export function Hero(): ReactElement {
+  const { ref: parallaxRef1, transform: transform1 } = useParallax(0.3);
+  const { ref: parallaxRef2, transform: transform2 } = useParallax(0.5);
+
   const scrollToSection = (sectionId: string): void => {
     const element = document.getElementById(sectionId);
     element?.scrollIntoView({ behavior: 'smooth' });
@@ -12,10 +16,18 @@ export function Hero(): ReactElement {
 
   return (
     <main className="relative min-h-screen flex items-center justify-center bg-gradient-hero p-8 overflow-hidden">
-      {/* Background decoration */}
+      {/* Background decoration with parallax */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl"></div>
+        <div
+          ref={parallaxRef1}
+          className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl transition-transform duration-100"
+          style={{ transform: transform1 }}
+        ></div>
+        <div
+          ref={parallaxRef2}
+          className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl transition-transform duration-100"
+          style={{ transform: transform2 }}
+        ></div>
       </div>
 
       <div className="relative z-10 max-w-4xl w-full">
