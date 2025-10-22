@@ -72,23 +72,6 @@ export default function TimelineContainer({
   };
 
   /**
-   * Handle horizontal scroll with mouse wheel
-   */
-  const handleWheel = (e: React.WheelEvent): void => {
-    const container = scrollContainerRef.current;
-    if (!container) return;
-
-    // Only handle horizontal scroll if not already scrolling horizontally
-    if (e.deltaX === 0 && e.deltaY !== 0) {
-      e.preventDefault();
-      container.scrollBy({
-        left: e.deltaY,
-        behavior: 'auto'
-      });
-    }
-  };
-
-  /**
    * Monitor scroll position
    */
   useEffect(() => {
@@ -107,6 +90,33 @@ export default function TimelineContainer({
     return () => {
       container.removeEventListener('scroll', checkScrollPosition);
       window.removeEventListener('resize', checkScrollPosition);
+    };
+  }, []);
+
+  /**
+   * Handle horizontal scroll with mouse wheel
+   * Uses native event listener to allow preventDefault
+   */
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const handleWheel = (e: WheelEvent): void => {
+      // Only handle horizontal scroll if not already scrolling horizontally
+      if (e.deltaX === 0 && e.deltaY !== 0) {
+        e.preventDefault();
+        container.scrollBy({
+          left: e.deltaY,
+          behavior: 'auto'
+        });
+      }
+    };
+
+    // Use native event listener with passive: false to allow preventDefault
+    container.addEventListener('wheel', handleWheel, { passive: false });
+
+    return () => {
+      container.removeEventListener('wheel', handleWheel);
     };
   }, []);
 
@@ -140,7 +150,6 @@ export default function TimelineContainer({
           'scroll-smooth scrollbar-thin scrollbar-track-gray-800 scrollbar-thumb-gray-600',
           'px-8 py-12'
         )}
-        onWheel={handleWheel}
         style={{
           scrollSnapType: 'x mandatory',
           WebkitOverflowScrolling: 'touch'
