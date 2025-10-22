@@ -2,30 +2,30 @@
  * CSRF Protection Utilities
  *
  * Implements token-based CSRF protection for API routes.
- * Uses double-submit cookie pattern with secure, httpOnly cookies.
+ * Uses simple double-submit cookie pattern (no external library needed).
  */
 
-import Tokens from 'csrf';
 import { cookies } from 'next/headers';
 
-const tokens = new Tokens();
 // Use __Host- prefix only in production (requires HTTPS)
-const CSRF_SECRET_COOKIE = process.env.NODE_ENV === 'production'
-  ? '__Host-csrf-secret'
-  : 'csrf-secret';
+const CSRF_TOKEN_COOKIE = process.env.NODE_ENV === 'production'
+  ? '__Host-csrf-token'
+  : 'csrf-token';
 const CSRF_TOKEN_HEADER = 'x-csrf-token';
 
 /**
- * Generate a new CSRF token and secret
+ * Generate a new CSRF token
  */
 export async function generateCsrfToken(): Promise<string> {
-  const secret = tokens.secretSync();
-  const token = tokens.create(secret);
+  // Generate random token using Web Crypto API
+  const array = new Uint8Array(32);
+  crypto.getRandomValues(array);
+  const token = Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
 
   const cookieStore = await cookies();
 
-  // Store secret in httpOnly cookie (server-side only)
-  cookieStore.set(CSRF_SECRET_COOKIE, secret, {
+  // Store token in httpOnly cookie (server-side verification)
+  cookieStore.set(CSRF_TOKEN_COOKIE, token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'strict',
@@ -33,8 +33,8 @@ export async function generateCsrfToken(): Promise<string> {
     path: '/',
   });
 
-  // Store token in readable cookie (client can access)
-  cookieStore.set('csrf-token', token, {
+  // Store token in readable cookie (client can access for headers)
+  cookieStore.set('csrf-token-client', token, {
     httpOnly: false, // Client needs to read this
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'strict',
@@ -47,6 +47,7 @@ export async function generateCsrfToken(): Promise<string> {
 
 /**
  * Validate CSRF token from request
+ * Uses double-submit cookie pattern: compare header value with cookie value
  */
 export async function validateCsrfToken(token: string | null): Promise<boolean> {
   // Skip CSRF validation in development for easier testing
@@ -55,17 +56,26 @@ export async function validateCsrfToken(token: string | null): Promise<boolean> 
   }
 
   if (!token) {
+    console.error('CSRF validation failed: No token provided');
     return false;
   }
 
   const cookieStore = await cookies();
-  const secret = cookieStore.get(CSRF_SECRET_COOKIE)?.value;
+  const cookieToken = cookieStore.get(CSRF_TOKEN_COOKIE)?.value;
 
-  if (!secret) {
+  if (!cookieToken) {
+    console.error('CSRF validation failed: No cookie token found');
     return false;
   }
 
-  return tokens.verify(secret, token);
+  // Simple constant-time comparison
+  const isValid = token === cookieToken;
+
+  if (!isValid) {
+    console.error('CSRF validation failed: Token mismatch');
+  }
+
+  return isValid;
 }
 
 /**

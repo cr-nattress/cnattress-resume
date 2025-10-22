@@ -13,7 +13,7 @@ export function getCsrfToken(): string | null {
   const cookies = document.cookie.split(';');
   for (const cookie of cookies) {
     const [name, value] = cookie.trim().split('=');
-    if (name === 'csrf-token') {
+    if (name === 'csrf-token-client') {
       return decodeURIComponent(value);
     }
   }

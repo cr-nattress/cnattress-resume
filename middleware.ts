@@ -3,15 +3,17 @@
  *
  * Sets CSRF tokens on every request to ensure client components
  * have access to tokens before making API calls.
+ *
+ * Uses simple double-submit cookie pattern (Edge Runtime compatible)
  */
 
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 // Use __Host- prefix only in production (requires HTTPS)
-const CSRF_SECRET_COOKIE = process.env.NODE_ENV === 'production'
-  ? '__Host-csrf-secret'
-  : 'csrf-secret';
+const CSRF_TOKEN_COOKIE = process.env.NODE_ENV === 'production'
+  ? '__Host-csrf-token'
+  : 'csrf-token';
 
 /**
  * Generate a random token using crypto (Edge Runtime compatible)
@@ -26,16 +28,15 @@ export async function middleware(request: NextRequest) {
   const response = NextResponse.next();
 
   // Check if CSRF token already exists
-  const existingSecret = request.cookies.get(CSRF_SECRET_COOKIE)?.value;
-  const existingToken = request.cookies.get('csrf-token')?.value;
+  const existingToken = request.cookies.get(CSRF_TOKEN_COOKIE)?.value;
 
   // Only generate new token if it doesn't exist
-  if (!existingSecret || !existingToken) {
-    const secret = generateRandomToken();
+  if (!existingToken) {
     const token = generateRandomToken();
 
-    // Set secret cookie (httpOnly, server-side only)
-    response.cookies.set(CSRF_SECRET_COOKIE, secret, {
+    // Set token cookie (httpOnly for server, but also readable by client for header)
+    // Using two cookies: one httpOnly for verification, one readable for sending
+    response.cookies.set(CSRF_TOKEN_COOKIE, token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
@@ -43,8 +44,8 @@ export async function middleware(request: NextRequest) {
       path: '/',
     });
 
-    // Set token cookie (readable by client)
-    response.cookies.set('csrf-token', token, {
+    // Set readable token cookie (client needs to read this for headers)
+    response.cookies.set('csrf-token-client', token, {
       httpOnly: false, // Client needs to read this
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
