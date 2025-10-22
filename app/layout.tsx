@@ -4,7 +4,7 @@ import { Providers } from "@/components/Providers";
 
 export const metadata: Metadata = {
   title: "Chris Nattress | Technical Lead & Senior Software Engineer",
-  description: "Technical Lead with 12+ years experience designing scalable web applications across healthcare, fintech, and hospitality. Specialized in C#/.NET Core, Angular, cloud architectures, and AI systems. Expertise in microservices, distributed teams, and AI-powered automation.",
+  description: "Technical Lead with 20+ years experience designing scalable web applications across healthcare, fintech, and hospitality. Specialized in C#/.NET Core, Angular, cloud architectures, and AI systems. Expertise in microservices, distributed teams, and AI-powered automation.",
   keywords: [
     "Chris Nattress",
     "Technical Lead",
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     url: "https://chris-nattress.com",
     siteName: "Chris Nattress Portfolio",
     title: "Chris Nattress | Technical Lead & Senior Software Engineer",
-    description: "Technical Lead with 12+ years building scalable applications. Specialized in C#/.NET, Angular, cloud architectures, and AI systems.",
+    description: "Technical Lead with 20+ years building scalable applications. Specialized in C#/.NET, Angular, cloud architectures, and AI systems.",
     images: [
       {
         url: "/og-image.png",
@@ -56,7 +56,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Chris Nattress | Technical Lead & Senior Software Engineer",
-    description: "Technical Lead with 12+ years building scalable applications. Specialized in C#/.NET, Angular, cloud architectures, and AI systems.",
+    description: "Technical Lead with 20+ years building scalable applications. Specialized in C#/.NET, Angular, cloud architectures, and AI systems.",
     images: ["/og-image.png"],
     creator: "@chrisnattress",
   },
@@ -76,7 +76,11 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+        <link rel="manifest" href="/site.webmanifest" />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
         <meta name="theme-color" content="#1e293b" />
       </head>

@@ -26,7 +26,7 @@ interface ChatWidgetProps {
   initiallyMinimized?: boolean;
 }
 
-export function ChatWidget({ initiallyMinimized = true }: ChatWidgetProps) {
+export function ChatWidget({ initiallyMinimized = true }: ChatWidgetProps): React.ReactElement {
   const [isOpen, setIsOpen] = useState(!initiallyMinimized);
   const [isMinimized, setIsMinimized] = useState(false);
   const [inputValue, setInputValue] = useState('');

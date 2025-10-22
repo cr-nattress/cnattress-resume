@@ -159,6 +159,19 @@ export const resumeData: ResumeData = {
         "Migrated from legacy source control to Git and implemented comprehensive testing strategy with TeamCity continuous integration reducing production defects by 40%"
       ],
       technologies: ["Web API", "ASP.NET MVC", "Entity Framework", "AngularJS", "Git", "TeamCity"]
+    },
+    {
+      company: "Ski Resort Data Services",
+      role: "Owner",
+      location: "Shavertown, PA",
+      period: "2006 – 2016",
+      description: "Founded and operated data services consultancy specializing in custom software solutions for ski resort operations, point-of-sale systems, and guest management platforms.",
+      achievements: [
+        "Built and scaled successful software consultancy from ground up, delivering custom data solutions and integrations for ski resort clients across the northeastern United States",
+        "Developed point-of-sale integrations and guest management systems using ASP.NET and SQL Server, streamlining resort operations and improving customer experience",
+        "Established long-term client relationships and maintained 95% client retention rate through consistent delivery of high-quality technical solutions and responsive customer service"
+      ],
+      technologies: ["Web API", "ASP.NET MVC", "Entity Framework", "AngularJS", "Azure", "C#", "SQL Server"]
     }
   ],
 

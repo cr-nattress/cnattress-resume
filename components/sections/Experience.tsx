@@ -1,7 +1,7 @@
 import { resumeData } from "@/lib/ai/resume-context";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 
-export default function Experience() {
+export default function Experience(): React.ReactElement {
   return (
     <section id="experience" className="py-20 bg-slate-800">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -13,7 +13,7 @@ export default function Experience() {
             </h2>
             <div className="w-20 h-1 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto mb-4"></div>
             <p className="text-gray-400 text-lg">
-              12+ years building scalable applications across fintech, healthcare, and hospitality
+              20+ years building scalable applications across fintech, healthcare, and hospitality
             </p>
           </div>
 

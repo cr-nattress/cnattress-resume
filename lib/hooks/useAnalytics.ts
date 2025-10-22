@@ -23,7 +23,13 @@ interface TrackProjectViewParams {
   interactionData?: Record<string, any>;
 }
 
-export function useAnalytics() {
+interface UseAnalyticsReturn {
+  trackVisitor: (params: TrackVisitorParams) => Promise<void>;
+  trackProjectView: (params: TrackProjectViewParams) => Promise<void>;
+  sessionId: string;
+}
+
+export function useAnalytics(): UseAnalyticsReturn {
   const sessionId = useRef(getSessionId());
   const isEnabled = process.env.NEXT_PUBLIC_ENABLE_ANALYTICS !== 'false';
 

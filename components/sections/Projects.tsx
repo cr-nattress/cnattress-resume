@@ -8,7 +8,7 @@ interface Project {
   category: string;
 }
 
-export default function Projects() {
+export default function Projects(): React.ReactElement {
   const projects: Project[] = [
     {
       title: "AI-Powered Career Portfolio",
@@ -60,7 +60,7 @@ export default function Projects() {
             </h2>
             <div className="w-20 h-1 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto mb-4"></div>
             <p className="text-gray-400 text-lg">
-              Highlights from 12+ years of building scalable applications
+              Highlights from 20+ years of building scalable applications
             </p>
           </div>
 

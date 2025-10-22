@@ -1,9 +1,9 @@
 "use client";
 
 import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
+import { useEffect, useState, ReactElement } from "react";
 
-export function ThemeToggle() {
+export function ThemeToggle(): ReactElement | null {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 

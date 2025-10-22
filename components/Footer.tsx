@@ -1,6 +1,9 @@
-import { resumeData } from "@/lib/ai/resume-context";
+"use client";
 
-export default function Footer() {
+import { resumeData } from "@/lib/ai/resume-context";
+import { ReactElement } from "react";
+
+export default function Footer(): ReactElement {
   const currentYear = new Date().getFullYear();
 
   const quickLinks = [

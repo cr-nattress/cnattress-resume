@@ -1,12 +1,13 @@
 import { resumeData } from "@/lib/ai/resume-context";
 import { Card, CardContent } from "@/components/ui/card";
+import { ReactElement } from "react";
 
-export default function About() {
+export default function About(): ReactElement {
   const stats = [
-    { label: "Years Experience", value: "12+" },
-    { label: "Companies", value: "6" },
+    { label: "Years Experience", value: "20+" },
+    { label: "Companies", value: "10" },
     { label: "Tech Lead Roles", value: "3" },
-    { label: "Microservices Built", value: "25+" }
+    { label: "App's Designed and Built", value: "50+" }
   ];
 
   return (

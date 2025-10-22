@@ -5,7 +5,7 @@ import { resumeData } from "@/lib/ai/resume-context";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
-export default function Contact() {
+export default function Contact(): React.ReactElement {
   const [formData, setFormData] = useState({
     name: "",
     email: "",

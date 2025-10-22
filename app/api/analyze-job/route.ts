@@ -1,21 +1,19 @@
 import { NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
+import { ZodError } from 'zod';
 import { resumeData } from '@/lib/ai/resume-context';
+import { JobAnalyzerRequestSchema } from '@/lib/schemas/job-analyzer.schema';
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY!,
 });
 
-export async function POST(req: Request) {
+export async function POST(req: Request): Promise<NextResponse> {
   try {
-    const { jobDescription } = await req.json();
-
-    if (!jobDescription || typeof jobDescription !== 'string') {
-      return NextResponse.json(
-        { error: 'Job description is required' },
-        { status: 400 }
-      );
-    }
+    // Parse and validate request body with Zod
+    const body = await req.json();
+    const validatedData = JobAnalyzerRequestSchema.parse(body);
+    const { jobDescription } = validatedData;
 
     // Build prompt for Claude to analyze job fit
     const analysisPrompt = `You are a career matching expert. Analyze how well this candidate matches a job description.
@@ -116,6 +114,24 @@ Return ONLY valid JSON, no markdown or explanation.`;
 
   } catch (error) {
     console.error('Job analysis error:', error);
+
+    // Handle Zod validation errors
+    if (error instanceof ZodError) {
+      // Type assertion needed due to catch clause typing
+      const zodError = error as any;
+      return NextResponse.json(
+        {
+          error: 'Validation failed',
+          details: zodError.errors.map((e: any) => ({
+            field: e.path.join('.'),
+            message: e.message,
+            code: e.code
+          }))
+        },
+        { status: 400 }
+      );
+    }
+
     return NextResponse.json(
       { error: 'Failed to analyze job description' },
       { status: 500 }

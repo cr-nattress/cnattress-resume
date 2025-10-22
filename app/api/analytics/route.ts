@@ -8,7 +8,9 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { ZodError } from 'zod';
 import { analytics } from '@/lib/supabase/client';
+import { AnalyticsEventSchema } from '@/lib/schemas/analytics.schema';
 
 // Rate limiting
 const rateLimitMap = new Map<string, number[]>();
@@ -32,7 +34,7 @@ function checkRateLimit(identifier: string): boolean {
 /**
  * POST handler for analytics tracking
  */
-export async function POST(req: NextRequest) {
+export async function POST(req: NextRequest): Promise<Response> {
   try {
     // Rate limiting
     const clientIp = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown';
@@ -44,32 +46,28 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Parse request body
+    // Parse and validate request body with Zod
     const body = await req.json();
-    const { type, data } = body;
-
-    if (!type || !data) {
-      return NextResponse.json(
-        { error: 'Type and data are required' },
-        { status: 400 }
-      );
-    }
+    const validatedData = AnalyticsEventSchema.parse(body);
 
     // Handle different analytics types
     let result;
 
-    switch (type) {
+    switch (validatedData.type) {
       case 'visitor':
-        result = await analytics.trackVisitor(data);
+        result = await analytics.trackVisitor(validatedData.data);
         break;
 
       case 'project_view':
-        result = await analytics.trackProjectView(data);
+        result = await analytics.trackProjectView(validatedData.data);
         break;
 
       default:
+        // Exhaustiveness check - TypeScript ensures all cases are handled
+        // @ts-expect-error - intentionally unused for exhaustiveness checking
+        const _exhaustive: never = validatedData;
         return NextResponse.json(
-          { error: `Unknown analytics type: ${type}` },
+          { error: `Unknown analytics type` },
           { status: 400 }
         );
     }
@@ -86,6 +84,24 @@ export async function POST(req: NextRequest) {
 
   } catch (error) {
     console.error('Analytics API error:', error);
+
+    // Handle Zod validation errors
+    if (error instanceof ZodError) {
+      // Type assertion needed due to catch clause typing
+      const zodError = error as any;
+      return NextResponse.json(
+        {
+          error: 'Validation failed',
+          details: zodError.errors.map((e: any) => ({
+            field: e.path.join('.'),
+            message: e.message,
+            code: e.code
+          }))
+        },
+        { status: 400 }
+      );
+    }
+
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -96,7 +112,7 @@ export async function POST(req: NextRequest) {
 /**
  * GET handler - retrieve analytics (admin only)
  */
-export async function GET(req: NextRequest) {
+export async function GET(req: NextRequest): Promise<NextResponse> {
   try {
     // Check for admin access key
     const authHeader = req.headers.get('authorization');

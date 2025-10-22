@@ -9,8 +9,10 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
+import { ZodError } from 'zod';
 import { getSystemPrompt } from '@/lib/ai/resume-context';
 import { analytics } from '@/lib/supabase/client';
+import { ChatRequestSchema } from '@/lib/schemas/chat.schema';
 
 // Initialize Anthropic client
 const anthropic = new Anthropic({
@@ -50,7 +52,7 @@ function checkRateLimit(identifier: string): boolean {
 /**
  * POST handler for chat messages
  */
-export async function POST(req: NextRequest) {
+export async function POST(req: NextRequest): Promise<Response> {
   const startTime = Date.now();
 
   try {
@@ -62,24 +64,10 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Parse request body
+    // Parse and validate request body with Zod
     const body = await req.json();
-    const { messages, sessionId } = body;
-
-    // Validate request
-    if (!messages || !Array.isArray(messages) || messages.length === 0) {
-      return NextResponse.json(
-        { error: 'Messages array is required' },
-        { status: 400 }
-      );
-    }
-
-    if (!sessionId) {
-      return NextResponse.json(
-        { error: 'Session ID is required' },
-        { status: 400 }
-      );
-    }
+    const validatedData = ChatRequestSchema.parse(body);
+    const { messages, sessionId } = validatedData;
 
     // Rate limiting
     const clientIp = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown';
@@ -166,6 +154,23 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error('Chat API error:', error);
 
+    // Handle Zod validation errors
+    if (error instanceof ZodError) {
+      // Type assertion needed due to catch clause typing
+      const zodError = error as any;
+      return NextResponse.json(
+        {
+          error: 'Validation failed',
+          details: zodError.errors.map((e: any) => ({
+            field: e.path.join('.'),
+            message: e.message,
+            code: e.code
+          }))
+        },
+        { status: 400 }
+      );
+    }
+
     // Handle specific Anthropic errors
     if (error instanceof Anthropic.APIError) {
       return NextResponse.json(
@@ -189,7 +194,7 @@ export async function POST(req: NextRequest) {
 /**
  * GET handler - return API info
  */
-export async function GET() {
+export async function GET(): Promise<NextResponse> {
   return NextResponse.json({
     service: 'Chris Nattress Portfolio - AI Chat API',
     status: 'operational',

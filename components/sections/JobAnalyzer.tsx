@@ -14,7 +14,7 @@ interface AnalysisResult {
   recommendation: string;
 }
 
-export default function JobAnalyzer() {
+export default function JobAnalyzer(): React.ReactElement {
   const [jobDescription, setJobDescription] = useState("");
   const [analyzing, setAnalyzing] = useState(false);
   const [result, setResult] = useState<AnalysisResult | null>(null);

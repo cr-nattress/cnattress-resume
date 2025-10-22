@@ -1,7 +1,7 @@
 import { resumeData } from "@/lib/ai/resume-context";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
-export default function Skills() {
+export default function Skills(): React.ReactElement {
   const iconMap: { [key: string]: string } = {
     "Core Technologies": "⚡",
     "Frontend Frameworks": "🎨",
