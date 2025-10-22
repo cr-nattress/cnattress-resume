@@ -75,8 +75,16 @@ export default function ResumeRegenerator() {
 
       const data = await response.json();
 
+      // Strip markdown code blocks if present (```json ... ```)
+      let cleanContent = data.content.trim();
+      if (cleanContent.startsWith('```json')) {
+        cleanContent = cleanContent.replace(/^```json\s*\n/, '').replace(/\n```\s*$/, '');
+      } else if (cleanContent.startsWith('```')) {
+        cleanContent = cleanContent.replace(/^```\s*\n/, '').replace(/\n```\s*$/, '');
+      }
+
       // Parse the JSON response from Claude
-      const content = JSON.parse(data.content);
+      const content = JSON.parse(cleanContent);
       setRegeneratedContent(content);
       setSelectedRole(roleType);
 
@@ -169,8 +177,7 @@ export default function ResumeRegenerator() {
               </h3>
               <Button
                 onClick={resetView}
-                variant="outline"
-                className="border-white/30 text-white hover:bg-white/10"
+                className="bg-white/10 border border-white/30 text-white hover:bg-white/20 transition-colors font-semibold"
               >
                 Change Role Type
               </Button>

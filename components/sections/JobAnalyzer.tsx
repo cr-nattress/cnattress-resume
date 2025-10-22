@@ -279,8 +279,7 @@ export default function JobAnalyzer(): React.ReactElement {
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button
                   onClick={resetAnalysis}
-                  variant="outline"
-                  className="flex-1 border-white/20 text-white hover:bg-white/10"
+                  className="flex-1 bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-colors font-semibold"
                 >
                   Analyze Another Job
                 </Button>
