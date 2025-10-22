@@ -22,6 +22,7 @@
 - [Analytics](#analytics)
 - [Contributing](#contributing)
 - [License](#license)
+- [Documentation](docs/) - Complete project documentation
 
 ---
 
@@ -232,7 +233,7 @@ This project is optimized for Netlify deployment with Next.js.
 
 **Continuous deployment** is automatic - every push to `main` triggers a new build.
 
-For detailed deployment instructions, see [DEPLOYMENT.md](./DEPLOYMENT.md).
+For detailed deployment instructions, see [Deployment Guide](docs/guides/deployment.md).
 
 ### Other Platforms
 
