@@ -10,7 +10,7 @@
  * @module useTimeline
  */
 
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import type { TimelineItem } from '../data/timeline-data';
 
 export interface UseTimelineReturn {
@@ -38,7 +38,6 @@ export function useTimeline({
   onSelectionChange
 }: UseTimelineOptions): UseTimelineReturn {
   const [selectedId, setSelectedId] = useState<string | null>(initialSelectedId ?? null);
-  const containerRef = useRef<HTMLDivElement | null>(null);
 
   /**
    * Select a timeline node

@@ -18,7 +18,7 @@ export interface UseScrollAnimationOptions {
 }
 
 export interface UseScrollAnimationReturn {
-  ref: React.RefObject<HTMLElement>;
+  ref: React.RefObject<HTMLElement | null>;
   isVisible: boolean;
   hasAnimated: boolean;
 }
@@ -103,7 +103,7 @@ export function useScrollAnimation(
  * Hook for parallax scroll effects
  */
 export function useParallax(speed: number = 0.5): {
-  ref: React.RefObject<HTMLDivElement>;
+  ref: React.RefObject<HTMLDivElement | null>;
   transform: string;
 } {
   const ref = useRef<HTMLDivElement>(null);

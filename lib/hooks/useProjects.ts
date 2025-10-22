@@ -11,7 +11,7 @@
  */
 
 import { useState, useCallback, useMemo, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import type { Project } from '../data/projects-data';
 import { projectsData, getAllTechnologies } from '../data/projects-data';
 
@@ -31,7 +31,6 @@ export interface UseProjectsReturn {
  * Custom hook for projects grid management
  */
 export function useProjects(): UseProjectsReturn {
-  const router = useRouter();
   const searchParams = useSearchParams();
 
   // Get initial filter from URL params
