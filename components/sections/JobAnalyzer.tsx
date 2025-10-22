@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { API_ENDPOINTS } from "@/lib/constants/api";
+import { useCsrf } from "@/lib/hooks/useCsrf";
 
 interface AnalysisResult {
   matchScore: number;
@@ -19,10 +20,16 @@ export default function JobAnalyzer(): React.ReactElement {
   const [analyzing, setAnalyzing] = useState(false);
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const { csrfToken } = useCsrf();
 
   const analyzeJob = async () => {
     if (!jobDescription.trim()) {
       setError("Please paste a job description");
+      return;
+    }
+
+    if (!csrfToken) {
+      setError("Security token not available. Please refresh the page.");
       return;
     }
 
@@ -33,7 +40,10 @@ export default function JobAnalyzer(): React.ReactElement {
     try {
       const response = await fetch(API_ENDPOINTS.ANALYZE_JOB, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-csrf-token": csrfToken,
+        },
         body: JSON.stringify({ jobDescription }),
       });
 

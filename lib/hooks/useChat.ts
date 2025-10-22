@@ -10,6 +10,7 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { getSessionId } from '@/lib/utils/session';
 import { API_ENDPOINTS } from '@/lib/constants/api';
+import { useCsrf } from './useCsrf';
 
 export interface Message {
   role: 'user' | 'assistant';
@@ -37,6 +38,7 @@ export function useChat(): UseChatReturn {
   const [error, setError] = useState<string | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
   const sessionId = useRef(getSessionId());
+  const { csrfToken } = useCsrf();
 
   // Load messages from localStorage on mount
   useEffect(() => {
@@ -72,6 +74,12 @@ export function useChat(): UseChatReturn {
   const sendMessage = useCallback(async (content: string) => {
     if (!content.trim() || isLoading) return;
 
+    // Check if CSRF token is available
+    if (!csrfToken) {
+      setError('Security token not available. Please refresh the page.');
+      return;
+    }
+
     setError(null);
     setIsLoading(true);
 
@@ -104,6 +112,7 @@ export function useChat(): UseChatReturn {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'x-csrf-token': csrfToken,
         },
         body: JSON.stringify({
           messages: conversationHistory,
@@ -208,7 +217,7 @@ export function useChat(): UseChatReturn {
       setIsLoading(false);
       abortControllerRef.current = null;
     }
-  }, [messages, isLoading]);
+  }, [messages, isLoading, csrfToken]);
 
   /**
    * Clear all messages

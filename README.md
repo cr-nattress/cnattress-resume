@@ -19,16 +19,15 @@
 - [Deployment](#deployment)
 - [Development](#development)
 - [API Reference](#api-reference)
-- [Analytics](#analytics)
+- [Documentation](#documentation)
 - [Contributing](#contributing)
 - [License](#license)
-- [Documentation](docs/) - Complete project documentation
 
 ---
 
 ## Overview
 
-This is a modern, AI-powered portfolio website that showcases professional experience through an interactive career concierge. Visitors can chat with an AI assistant powered by Claude that has comprehensive knowledge of the professional background, skills, and achievements.
+This is a modern, AI-powered portfolio website that showcases professional experience through an interactive career concierge. Visitors can chat with an AI assistant powered by Claude that has comprehensive knowledge of professional background, skills, and achievements.
 
 **Built for:**
 - Software engineers seeking to showcase their work
@@ -46,15 +45,18 @@ This is a modern, AI-powered portfolio website that showcases professional exper
 
 ## Features
 
-- **AI Career Concierge** - Interactive chatbot that answers questions about professional experience, skills, and projects
-- **Streaming Responses** - Real-time AI responses with smooth text streaming
-- **Message Persistence** - Conversation history stored in browser session
-- **Analytics Dashboard** - Track chat interactions and visitor engagement
-- **Rate Limiting** - Protect API endpoints from abuse (100 requests/hour per IP)
-- **Mobile Responsive** - Beautiful gradient design that works on all devices
-- **Type-Safe** - Full TypeScript implementation with strict mode enabled
-- **Server Components** - Optimized performance using React Server Components
-- **Admin Dashboard** - Password-protected analytics interface at `/admin/analytics`
+- 🤖 **AI Career Concierge** - Interactive chatbot that answers questions about professional experience, skills, and projects with streaming responses
+- 🎯 **Job Fit Analyzer** - AI-powered tool that analyzes job descriptions against your experience to show compatibility
+- 💬 **Message Persistence** - Conversation history stored in browser session for continuity
+- 📊 **Analytics Dashboard** - Track chat interactions and visitor engagement with detailed metrics
+- 🔒 **CSRF Protection** - Security measures on all API endpoints to prevent cross-site request forgery
+- 🛡️ **Rate Limiting** - Protect API endpoints from abuse (100 requests/hour per IP)
+- 🎨 **Beautiful Gradient Design** - Modern, responsive interface that works on all devices
+- ⚡ **Type-Safe** - Full TypeScript implementation with strict mode enabled
+- 🚀 **Server Components** - Optimized performance using React Server Components
+- 🔐 **Admin Dashboard** - Password-protected analytics interface at `/admin/analytics`
+- 🌙 **Dark Mode** - Theme toggle with system preference detection
+- 📱 **Mobile Responsive** - Seamless experience across desktop, tablet, and mobile
 
 ---
 
@@ -104,17 +106,25 @@ ANTHROPIC_MODEL=claude-sonnet-4-20250514
 
 # Application
 NEXT_PUBLIC_APP_URL=http://localhost:3000
-NODE_ENV=development
 ADMIN_ACCESS_KEY=your-secret-admin-key
 ```
 
-4. **Run the development server**
+4. **Set up the database**
+
+Run the SQL schema in your Supabase SQL Editor:
+
+```bash
+# Copy schema from docs/infrastructure/supabase.md
+# Or run: cat docs/infrastructure/supabase.md
+```
+
+5. **Run the development server**
 
 ```bash
 npm run dev
 ```
 
-5. **Open your browser**
+6. **Open your browser**
 
 Navigate to [http://localhost:3000](http://localhost:3000)
 
@@ -138,13 +148,14 @@ You should receive a streaming AI response with details about technical skills a
 ┌─────────────────────────────────────────────────────────┐
 │                      Next.js App                        │
 │  ┌─────────────┐  ┌──────────────┐  ┌───────────────┐  │
-│  │   Page.tsx  │  │  ChatWidget  │  │  Admin Panel  │  │
+│  │   Hero.tsx  │  │  ChatWidget  │  │  Job Analyzer │  │
 │  └──────┬──────┘  └──────┬───────┘  └───────┬───────┘  │
 │         │                 │                   │          │
 │         └────────┬────────┴──────────┬────────┘          │
 │                  │                   │                   │
 │         ┌────────▼────────┐  ┌───────▼────────┐         │
 │         │  /api/chat      │  │ /api/analytics │         │
+│         │  /api/csrf      │  │ /api/analyze-job│        │
 │         └────────┬────────┘  └───────┬────────┘         │
 └──────────────────┼────────────────────┼──────────────────┘
                    │                    │
@@ -158,22 +169,29 @@ You should receive a streaming AI response with details about technical skills a
 
 **Frontend:**
 - `app/page.tsx` - Homepage with hero section
-- `components/chat/ChatWidget.tsx` - AI chat interface
+- `components/Hero.tsx` - Hero section with stats and CTAs
+- `components/chat/ChatWidget.tsx` - AI chat interface with streaming
+- `components/sections/JobAnalyzer.tsx` - AI-powered job matching tool
 - `app/admin/analytics/page.tsx` - Analytics dashboard
 
 **Backend API Routes:**
-- `app/api/chat/route.ts` - Handles AI chat requests with streaming
+- `app/api/chat/route.ts` - Handles AI chat requests with streaming responses
 - `app/api/analytics/route.ts` - Retrieves conversation analytics
+- `app/api/analyze-job/route.ts` - Job description matching analysis
+- `app/api/csrf/route.ts` - CSRF token generation and validation
 
 **Core Libraries:**
 - `lib/ai/resume-context.ts` - Resume data and system prompts for AI
 - `lib/hooks/useChat.ts` - React hook for chat functionality
+- `lib/hooks/useCsrf.ts` - React hook for CSRF token management
 - `lib/supabase/client.ts` - Supabase client and analytics helpers
+- `lib/csrf.ts` - CSRF protection utilities
 
 ### Design Philosophy
 
 - **AI-First** - Intelligence embedded throughout the user experience
 - **Privacy-Focused** - Minimal tracking, anonymous analytics
+- **Security-First** - CSRF protection, rate limiting, input validation
 - **Performance** - Server components, streaming responses, optimized bundles
 - **Developer Experience** - Strict TypeScript, clear architecture, comprehensive docs
 
@@ -254,18 +272,27 @@ chris-nattress.com/
 ├── app/                      # Next.js App Router
 │   ├── api/                  # API routes
 │   │   ├── chat/            # AI chat endpoint
-│   │   └── analytics/       # Analytics endpoint
+│   │   ├── analytics/       # Analytics endpoint
+│   │   ├── analyze-job/     # Job analyzer endpoint
+│   │   └── csrf/            # CSRF token endpoint
 │   ├── admin/               # Admin dashboard
 │   ├── layout.tsx           # Root layout
 │   └── page.tsx             # Homepage
 ├── components/              # React components
 │   ├── ui/                  # Shadcn/ui components
-│   └── chat/                # Chat widget
+│   ├── chat/                # Chat widget
+│   ├── sections/            # Page sections
+│   └── Hero.tsx             # Hero component
 ├── lib/                     # Shared utilities
 │   ├── ai/                  # AI/resume context
 │   ├── hooks/               # React hooks
-│   └── supabase/            # Database client
-├── supabase/                # Database schema
+│   ├── supabase/            # Database client
+│   ├── schemas/             # Zod validation schemas
+│   └── csrf.ts              # CSRF utilities
+├── docs/                    # Documentation
+│   ├── guides/              # Setup and deployment guides
+│   ├── reference/           # Technical reference
+│   └── infrastructure/      # Database and infrastructure
 ├── .claude/                 # Claude Code skills
 └── public/                  # Static assets
 ```
@@ -290,6 +317,7 @@ npm run lint        # Run ESLint
 # Send a test message to the chat API
 curl -X POST http://localhost:3000/api/chat \
   -H "Content-Type: application/json" \
+  -H "x-csrf-token: your-csrf-token" \
   -d '{
     "messages": [{"role": "user", "content": "What technologies does Chris know?"}],
     "sessionId": "test-session-123"
@@ -298,13 +326,17 @@ curl -X POST http://localhost:3000/api/chat \
 
 ### Database Setup
 
-The Supabase schema is in `supabase/schema.sql`. To set it up:
+The Supabase schema is in `docs/infrastructure/supabase.md`. To set it up:
 
 1. Go to your Supabase project
 2. Navigate to SQL Editor
-3. Run the contents of `supabase/schema.sql`
+3. Run the schema SQL
 
-This creates the `chat_conversations` table with Row Level Security policies.
+This creates all required tables:
+- `chat_conversations` - AI chat logs with response times
+- `visitor_analytics` - Anonymous visitor tracking
+- `job_analyses` - Job description match analysis
+- `project_views` - Portfolio project interactions
 
 ---
 
@@ -324,6 +356,12 @@ Send a message to the AI chatbot.
 }
 ```
 
+**Headers:**
+```
+Content-Type: application/json
+x-csrf-token: <csrf-token>
+```
+
 **Response:** Server-Sent Events (SSE) stream
 
 ```
@@ -334,6 +372,46 @@ data: [DONE]
 ```
 
 **Rate Limits:** 100 requests per hour per IP
+
+### POST /api/analyze-job
+
+Analyze a job description against resume.
+
+**Request:**
+```json
+{
+  "jobDescription": "Looking for a senior developer with React and Node.js experience..."
+}
+```
+
+**Headers:**
+```
+Content-Type: application/json
+x-csrf-token: <csrf-token>
+```
+
+**Response:**
+```json
+{
+  "analysis": {
+    "matchScore": 85,
+    "strengths": ["React expertise", "Node.js experience"],
+    "gaps": ["Specific framework X"],
+    "recommendation": "Strong fit for this role..."
+  }
+}
+```
+
+### GET /api/csrf
+
+Get a CSRF token for protected requests.
+
+**Response:**
+```json
+{
+  "csrfToken": "abc123..."
+}
+```
 
 ### GET /api/analytics
 
@@ -363,26 +441,14 @@ x-admin-key: your-admin-access-key
 
 ---
 
-## Analytics
+## Documentation
 
-### Viewing Analytics
-
-Visit `/admin/analytics` on your deployed site and enter your `ADMIN_ACCESS_KEY`.
-
-**Metrics tracked:**
-- Total conversations
-- Messages per session
-- Average response time
-- Popular questions
-- Timestamp distribution
-
-### Privacy
-
-- No personal data collected
-- Anonymous session IDs only
-- IP addresses not stored
-- GDPR compliant
-- No third-party analytics
+- 📖 [Complete Documentation](docs/) - Full documentation index
+- 🚀 [Deployment Guide](docs/guides/deployment.md) - Detailed deployment instructions
+- 🧪 [Testing Guide](docs/guides/testing.md) - Testing strategies
+- 🔧 [Repository Setup](docs/guides/repository-setup.md) - Initial setup guide
+- 💻 [Claude Instructions](docs/reference/claude-instructions.md) - Claude Code development guide
+- 🗄️ [Supabase Setup](docs/infrastructure/supabase.md) - Database configuration
 
 ---
 
@@ -453,4 +519,4 @@ Permission to use, copy, modify, and/or distribute this software for any purpose
 **Live Site:** Coming soon after deployment
 **Repository:** https://github.com/cr-nattress/cnattress-resume
 
-Built with Claude Code - Generated with [Claude Code](https://claude.com/claude-code)
+Built with ❤️ using Claude Code
