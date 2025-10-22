@@ -3,6 +3,7 @@ import "./globals.css";
 import { Providers } from "@/components/Providers";
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://chris-nattress.com'),
   title: "Chris Nattress | Technical Lead & Senior Software Engineer",
   description: "Technical Lead with 20+ years experience designing scalable web applications across healthcare, fintech, and hospitality. Specialized in C#/.NET Core, Angular, cloud architectures, and AI systems. Expertise in microservices, distributed teams, and AI-powered automation.",
   keywords: [

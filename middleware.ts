@@ -22,17 +22,6 @@ function generateRandomToken(): string {
   return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
 }
 
-/**
- * Create a hash of the secret and token (Edge Runtime compatible)
- */
-async function createTokenHash(secret: string, token: string): Promise<string> {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(secret + token);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-}
-
 export async function middleware(request: NextRequest) {
   const response = NextResponse.next();
 

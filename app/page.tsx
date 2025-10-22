@@ -7,6 +7,8 @@ import Skills from "@/components/sections/Skills";
 import Contact from "@/components/sections/Contact";
 import Footer from "@/components/Footer";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import ParticleCursor from "@/components/effects/ParticleCursor";
+import KonamiCode from "@/components/easter-eggs/KonamiCode";
 
 // Dynamic import for ChatWidget (reduces initial bundle size)
 const ChatWidget = dynamic(
@@ -28,6 +30,25 @@ const TimelineSection = dynamic(
           <div className="animate-pulse space-y-4">
             <div className="h-8 bg-white/10 rounded w-64 mx-auto"></div>
             <div className="h-64 bg-white/5 rounded"></div>
+          </div>
+        </div>
+      </section>
+    ),
+  }
+);
+
+// Dynamic import for 3D Tech Stack (reduces initial bundle size)
+const TechStack3D = dynamic(
+  () => import("@/components/sections/TechStack3D"),
+  {
+    loading: () => (
+      <section className="py-20 bg-gradient-to-b from-gray-900 via-black to-gray-900">
+        <div className="container mx-auto px-4">
+          <h2 className="text-4xl font-bold text-center mb-12 gradient-text">
+            Technology Universe
+          </h2>
+          <div className="h-[600px] flex items-center justify-center">
+            <div className="animate-pulse text-white/60">Loading 3D Experience...</div>
           </div>
         </div>
       </section>
@@ -120,6 +141,37 @@ const ResumeRegenerator = dynamic(
 export default function Home(): ReactElement {
   return (
     <>
+      {/* JSON-LD Schema Markup */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Person",
+            name: "Chris Nattress",
+            jobTitle: "Technical Lead & Senior Software Engineer",
+            description: "Technical Lead with 20+ years experience in C#/.NET, Angular, TypeScript, cloud architecture, and AI integration",
+            url: "https://chris-nattress.com",
+            sameAs: [
+              "https://github.com/chris-nattress",
+              "https://linkedin.com/in/chris-nattress"
+            ],
+            knowsAbout: [
+              "C#",
+              ".NET Core",
+              "Angular",
+              "React",
+              "TypeScript",
+              "Azure",
+              "AWS",
+              "AI Integration",
+              "Microservices",
+              "Cloud Architecture"
+            ]
+          })
+        }}
+      />
+
       {/* Hero Section - Client Component Island */}
       <Hero />
 
@@ -128,12 +180,19 @@ export default function Home(): ReactElement {
       <TimelineSection />
       <Experience />
       <Skills />
+      <TechStack3D />
       <ProjectsGrid />
       <GitHubSection />
       <JobAnalyzer />
       <ResumeRegenerator />
       <Contact />
       <Footer />
+
+      {/* Visual Effects */}
+      <ParticleCursor />
+
+      {/* Easter Eggs */}
+      <KonamiCode />
 
       {/* AI Chat Widget */}
       <ChatWidget />
