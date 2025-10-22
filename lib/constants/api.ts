@@ -8,6 +8,10 @@ export const API_ENDPOINTS = {
   CHAT: '/api/chat',
   ANALYZE_JOB: '/api/analyze-job',
   ANALYTICS: '/api/analytics',
+  REGENERATE_RESUME: '/api/regenerate-resume',
+  EXPLAIN_PROJECT: '/api/explain-project',
+  CONTACT: '/api/contact',
+  SUGGEST_MESSAGE: '/api/suggest-message',
 } as const;
 
 export const RATE_LIMITS = {

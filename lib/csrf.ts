@@ -65,4 +65,13 @@ export function getCsrfTokenFromHeaders(headers: Headers): string | null {
   return headers.get(CSRF_TOKEN_HEADER);
 }
 
+/**
+ * Verify CSRF token from NextRequest
+ * Convenience wrapper for API routes
+ */
+export async function verifyCsrfToken(request: Request): Promise<boolean> {
+  const token = getCsrfTokenFromHeaders(request.headers);
+  return validateCsrfToken(token);
+}
+
 export { CSRF_TOKEN_HEADER };

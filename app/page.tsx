@@ -96,6 +96,27 @@ const JobAnalyzer = dynamic(
   }
 );
 
+// Dynamic import for ResumeRegenerator (reduces initial bundle size)
+const ResumeRegenerator = dynamic(
+  () => import("@/components/sections/ResumeRegenerator"),
+  {
+    loading: () => (
+      <section className="py-20 bg-gradient-to-b from-slate-900 to-slate-800">
+        <div className="container mx-auto px-4 text-center">
+          <div className="animate-pulse space-y-4">
+            <div className="h-8 bg-white/10 rounded w-64 mx-auto"></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="h-64 bg-white/5 rounded"></div>
+              <div className="h-64 bg-white/5 rounded"></div>
+              <div className="h-64 bg-white/5 rounded"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    ),
+  }
+);
+
 export default function Home(): ReactElement {
   return (
     <>
@@ -110,6 +131,7 @@ export default function Home(): ReactElement {
       <ProjectsGrid />
       <GitHubSection />
       <JobAnalyzer />
+      <ResumeRegenerator />
       <Contact />
       <Footer />
 
