@@ -11,6 +11,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ZodError } from 'zod';
 import { analytics } from '@/lib/supabase/client';
 import { AnalyticsEventSchema } from '@/lib/schemas/analytics.schema';
+import { validateCsrfToken, getCsrfTokenFromHeaders } from '@/lib/csrf';
 
 // Rate limiting
 const rateLimitMap = new Map<string, number[]>();
@@ -43,6 +44,17 @@ export async function POST(req: NextRequest): Promise<Response> {
       return NextResponse.json(
         { error: 'Rate limit exceeded' },
         { status: 429 }
+      );
+    }
+
+    // CSRF Protection
+    const csrfToken = getCsrfTokenFromHeaders(req.headers);
+    const isValidCsrf = await validateCsrfToken(csrfToken);
+
+    if (!isValidCsrf) {
+      return NextResponse.json(
+        { error: 'Invalid or missing CSRF token' },
+        { status: 403 }
       );
     }
 

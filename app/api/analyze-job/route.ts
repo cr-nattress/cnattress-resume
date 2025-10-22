@@ -1,15 +1,27 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { ZodError } from 'zod';
 import { resumeData } from '@/lib/ai/resume-context';
 import { JobAnalyzerRequestSchema } from '@/lib/schemas/job-analyzer.schema';
+import { validateCsrfToken, getCsrfTokenFromHeaders } from '@/lib/csrf';
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY!,
 });
 
-export async function POST(req: Request): Promise<NextResponse> {
+export async function POST(req: NextRequest): Promise<NextResponse> {
   try {
+    // CSRF Protection
+    const csrfToken = getCsrfTokenFromHeaders(req.headers);
+    const isValidCsrf = await validateCsrfToken(csrfToken);
+
+    if (!isValidCsrf) {
+      return NextResponse.json(
+        { error: 'Invalid or missing CSRF token' },
+        { status: 403 }
+      );
+    }
+
     // Parse and validate request body with Zod
     const body = await req.json();
     const validatedData = JobAnalyzerRequestSchema.parse(body);

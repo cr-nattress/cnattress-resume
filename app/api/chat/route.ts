@@ -13,6 +13,7 @@ import { ZodError } from 'zod';
 import { getSystemPrompt } from '@/lib/ai/resume-context';
 import { analytics } from '@/lib/supabase/client';
 import { ChatRequestSchema } from '@/lib/schemas/chat.schema';
+import { validateCsrfToken, getCsrfTokenFromHeaders } from '@/lib/csrf';
 
 // Initialize Anthropic client
 const anthropic = new Anthropic({
@@ -61,6 +62,17 @@ export async function POST(req: NextRequest): Promise<Response> {
       return NextResponse.json(
         { error: 'Anthropic API key not configured' },
         { status: 500 }
+      );
+    }
+
+    // CSRF Protection
+    const csrfToken = getCsrfTokenFromHeaders(req.headers);
+    const isValidCsrf = await validateCsrfToken(csrfToken);
+
+    if (!isValidCsrf) {
+      return NextResponse.json(
+        { error: 'Invalid or missing CSRF token' },
+        { status: 403 }
       );
     }
 
