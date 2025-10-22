@@ -56,6 +56,29 @@ const ProjectsGrid = dynamic(
   }
 );
 
+// Dynamic import for GitHubSection (reduces initial bundle size)
+const GitHubSection = dynamic(
+  () => import("@/components/github/GitHubSection"),
+  {
+    loading: () => (
+      <section className="py-20 bg-gradient-to-b from-gray-900 via-black to-gray-900">
+        <div className="container mx-auto px-4 text-center">
+          <div className="animate-pulse space-y-4">
+            <div className="h-8 bg-white/10 rounded w-64 mx-auto"></div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+              <div className="lg:col-span-2 space-y-4">
+                <div className="h-32 bg-white/5 rounded"></div>
+                <div className="h-64 bg-white/5 rounded"></div>
+              </div>
+              <div className="h-96 bg-white/5 rounded"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    ),
+  }
+);
+
 // Dynamic import for JobAnalyzer (reduces initial bundle size)
 const JobAnalyzer = dynamic(
   () => import("@/components/sections/JobAnalyzer"),
@@ -85,6 +108,7 @@ export default function Home(): ReactElement {
       <Experience />
       <Skills />
       <ProjectsGrid />
+      <GitHubSection />
       <JobAnalyzer />
       <Contact />
       <Footer />
