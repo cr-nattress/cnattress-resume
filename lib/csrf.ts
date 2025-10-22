@@ -22,10 +22,20 @@ export async function generateCsrfToken(): Promise<string> {
   const secret = tokens.secretSync();
   const token = tokens.create(secret);
 
-  // Store secret in httpOnly cookie
   const cookieStore = await cookies();
+
+  // Store secret in httpOnly cookie (server-side only)
   cookieStore.set(CSRF_SECRET_COOKIE, secret, {
     httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+    maxAge: 60 * 60 * 24, // 24 hours
+    path: '/',
+  });
+
+  // Store token in readable cookie (client can access)
+  cookieStore.set('csrf-token', token, {
+    httpOnly: false, // Client needs to read this
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'strict',
     maxAge: 60 * 60 * 24, // 24 hours
