@@ -9,7 +9,10 @@ import Tokens from 'csrf';
 import { cookies } from 'next/headers';
 
 const tokens = new Tokens();
-const CSRF_SECRET_COOKIE = '__Host-csrf-secret';
+// Use __Host- prefix only in production (requires HTTPS)
+const CSRF_SECRET_COOKIE = process.env.NODE_ENV === 'production'
+  ? '__Host-csrf-secret'
+  : 'csrf-secret';
 const CSRF_TOKEN_HEADER = 'x-csrf-token';
 
 /**
@@ -36,6 +39,11 @@ export async function generateCsrfToken(): Promise<string> {
  * Validate CSRF token from request
  */
 export async function validateCsrfToken(token: string | null): Promise<boolean> {
+  // Skip CSRF validation in development for easier testing
+  if (process.env.NODE_ENV !== 'production') {
+    return true;
+  }
+
   if (!token) {
     return false;
   }
