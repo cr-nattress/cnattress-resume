@@ -12,8 +12,6 @@ const ExplainProjectSchema = z.object({
   explanationType: z.enum(['technical', 'executive', 'both']).default('both'),
 });
 
-type ExplainProjectRequest = z.infer<typeof ExplainProjectSchema>;
-
 export async function POST(req: NextRequest): Promise<NextResponse> {
   try {
     // Validate API key
@@ -81,10 +79,12 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
   } catch (error) {
     if (error instanceof z.ZodError) {
+      // Type assertion needed due to catch clause typing
+      const zodError = error as any;
       return NextResponse.json(
         {
           error: 'Validation failed',
-          details: error.errors.map(e => ({
+          details: zodError.errors.map((e: any) => ({
             field: e.path.join('.'),
             message: e.message,
             code: e.code

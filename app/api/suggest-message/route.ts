@@ -5,12 +5,8 @@ import { z } from 'zod';
 
 // Request validation schema
 const SuggestMessageSchema = z.object({
-  context: z.enum(['general', 'job-opportunity', 'collaboration', 'question'], {
-    errorMap: () => ({ message: 'Context must be one of: general, job-opportunity, collaboration, question' })
-  }).optional().default('general'),
+  context: z.enum(['general', 'job-opportunity', 'collaboration', 'question']).optional().default('general'),
 });
-
-type SuggestMessageRequest = z.infer<typeof SuggestMessageSchema>;
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
   try {
@@ -73,10 +69,12 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
   } catch (error) {
     if (error instanceof z.ZodError) {
+      // Type assertion needed due to catch clause typing
+      const zodError = error as any;
       return NextResponse.json(
         {
           error: 'Validation failed',
-          details: error.errors.map(e => ({
+          details: zodError.errors.map((e: any) => ({
             field: e.path.join('.'),
             message: e.message,
             code: e.code

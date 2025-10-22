@@ -10,8 +10,6 @@ const ContactFormSchema = z.object({
   honeypot: z.string().max(0, 'Spam detected').optional(), // Should be empty if not spam
 });
 
-type ContactFormRequest = z.infer<typeof ContactFormSchema>;
-
 export async function POST(req: NextRequest): Promise<NextResponse> {
   try {
     // Verify CSRF token
@@ -75,10 +73,12 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
   } catch (error) {
     if (error instanceof z.ZodError) {
+      // Type assertion needed due to catch clause typing
+      const zodError = error as any;
       return NextResponse.json(
         {
           error: 'Validation failed',
-          details: error.errors.map(e => ({
+          details: zodError.errors.map((e: any) => ({
             field: e.path.join('.'),
             message: e.message,
             code: e.code

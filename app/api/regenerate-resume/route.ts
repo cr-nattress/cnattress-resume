@@ -6,12 +6,8 @@ import { z } from 'zod';
 
 // Request validation schema
 const RegenerateResumeSchema = z.object({
-  roleType: z.enum(['frontend', 'backend', 'fullstack', 'devops', 'ai-ml'], {
-    errorMap: () => ({ message: 'Role type must be one of: frontend, backend, fullstack, devops, ai-ml' })
-  }),
+  roleType: z.enum(['frontend', 'backend', 'fullstack', 'devops', 'ai-ml']),
 });
-
-type RegenerateResumeRequest = z.infer<typeof RegenerateResumeSchema>;
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
   try {
@@ -71,10 +67,12 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
   } catch (error) {
     if (error instanceof z.ZodError) {
+      // Type assertion needed due to catch clause typing
+      const zodError = error as any;
       return NextResponse.json(
         {
           error: 'Validation failed',
-          details: error.errors.map(e => ({
+          details: zodError.errors.map((e: any) => ({
             field: e.path.join('.'),
             message: e.message,
             code: e.code
