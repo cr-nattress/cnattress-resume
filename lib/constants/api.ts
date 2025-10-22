@@ -9,6 +9,7 @@ export const API_ENDPOINTS = {
   ANALYZE_JOB: '/api/analyze-job',
   ANALYTICS: '/api/analytics',
   REGENERATE_RESUME: '/api/regenerate-resume',
+  EXPLAIN_PROJECT: '/api/explain-project',
 } as const;
 
 export const RATE_LIMITS = {
