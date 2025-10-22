@@ -4,35 +4,125 @@ import { useState } from "react";
 import { resumeData } from "@/lib/ai/resume-context";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Sparkles, Loader2 } from "lucide-react";
+import { getCsrfToken } from "@/lib/utils/csrf-token";
+import { API_ENDPOINTS } from "@/lib/constants/api";
+
+type MessageContext = 'general' | 'job-opportunity' | 'collaboration' | 'question';
 
 export default function Contact(): React.ReactElement {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    message: ""
+    message: "",
+    honeypot: "" // Spam prevention field (should remain empty)
   });
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
+  const [selectedContext, setSelectedContext] = useState<MessageContext>('general');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
-    // For now, just show success message
-    // TODO: Add email API integration in EPIC-004
-    console.log("Form submitted:", formData);
-    setSubmitted(true);
+    setIsSubmitting(true);
+    setError(null);
 
-    // Reset form after 3 seconds
-    setTimeout(() => {
-      setFormData({ name: "", email: "", message: "" });
-      setSubmitted(false);
-    }, 3000);
+    try {
+      const csrfToken = getCsrfToken();
+      if (!csrfToken) {
+        throw new Error('CSRF token not found. Please refresh the page.');
+      }
+
+      const response = await fetch(API_ENDPOINTS.CONTACT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': csrfToken,
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to send message');
+      }
+
+      setSubmitted(true);
+
+      // Reset form after 5 seconds
+      setTimeout(() => {
+        setFormData({ name: "", email: "", message: "", honeypot: "" });
+        setSubmitted(false);
+      }, 5000);
+
+    } catch (err) {
+      console.error('Contact form error:', err);
+      setError(err instanceof Error ? err.message : 'Failed to send message');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
     });
   };
+
+  const handleGetSuggestions = async (context: MessageContext): Promise<void> => {
+    setIsLoadingSuggestions(true);
+    setSelectedContext(context);
+    setShowSuggestions(true);
+    setSuggestions([]);
+
+    try {
+      const csrfToken = getCsrfToken();
+      if (!csrfToken) {
+        throw new Error('CSRF token not found. Please refresh the page.');
+      }
+
+      const response = await fetch(API_ENDPOINTS.SUGGEST_MESSAGE, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': csrfToken,
+        },
+        body: JSON.stringify({ context }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate suggestions');
+      }
+
+      const data = await response.json();
+      setSuggestions(data.suggestions);
+
+    } catch (err) {
+      console.error('Suggestion error:', err);
+      setError('Failed to generate message suggestions');
+    } finally {
+      setIsLoadingSuggestions(false);
+    }
+  };
+
+  const useSuggestion = (suggestion: string): void => {
+    setFormData({
+      ...formData,
+      message: suggestion
+    });
+    setShowSuggestions(false);
+  };
+
+  const contextOptions: { value: MessageContext; label: string; description: string }[] = [
+    { value: 'general', label: 'General Inquiry', description: 'Just saying hello or general interest' },
+    { value: 'job-opportunity', label: 'Job Opportunity', description: 'Discussing a role or position' },
+    { value: 'collaboration', label: 'Collaboration', description: 'Proposing a project or partnership' },
+    { value: 'question', label: 'Technical Question', description: 'Seeking advice or expertise' },
+  ];
 
   return (
     <section id="contact" className="py-20 bg-slate-900">
@@ -77,59 +167,157 @@ export default function Contact(): React.ReactElement {
                     <p className="text-gray-400">I'll get back to you soon.</p>
                   </div>
                 ) : (
-                  <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                      <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">
-                        Name
-                      </label>
+                  <>
+                    {/* AI Suggestion Section */}
+                    {!showSuggestions && (
+                      <div className="mb-6">
+                        <p className="text-sm text-gray-400 mb-3">Need help getting started?</p>
+                        <div className="grid grid-cols-2 gap-2">
+                          {contextOptions.map((option) => (
+                            <Button
+                              key={option.value}
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleGetSuggestions(option.value)}
+                              disabled={isLoadingSuggestions}
+                              className="border-purple-500/30 text-purple-300 hover:bg-purple-500/10 text-xs"
+                            >
+                              <Sparkles className="w-3 h-3 mr-1" />
+                              {option.label}
+                            </Button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* AI Suggestions Display */}
+                    {showSuggestions && (
+                      <div className="mb-6 p-4 bg-purple-500/10 border border-purple-500/20 rounded-lg">
+                        <div className="flex items-center justify-between mb-3">
+                          <h4 className="text-sm font-semibold text-purple-300">
+                            AI Suggestions - {contextOptions.find(o => o.value === selectedContext)?.label}
+                          </h4>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setShowSuggestions(false)}
+                            className="text-gray-400 hover:text-white text-xs"
+                          >
+                            Close
+                          </Button>
+                        </div>
+
+                        {isLoadingSuggestions ? (
+                          <div className="flex items-center justify-center py-8">
+                            <Loader2 className="w-6 h-6 text-purple-400 animate-spin" />
+                          </div>
+                        ) : (
+                          <div className="space-y-2">
+                            {suggestions.map((suggestion, index) => (
+                              <button
+                                key={index}
+                                type="button"
+                                onClick={() => useSuggestion(suggestion)}
+                                className="w-full text-left p-3 bg-white/5 rounded border border-white/10 hover:bg-white/10 hover:border-purple-500/50 transition-all text-sm text-gray-300"
+                              >
+                                {suggestion}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                      {/* Honeypot field - hidden from users, should stay empty */}
                       <input
                         type="text"
-                        id="name"
-                        name="name"
-                        value={formData.name}
+                        name="honeypot"
+                        value={formData.honeypot}
                         onChange={handleChange}
-                        required
-                        className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        placeholder="Your name"
+                        className="hidden"
+                        tabIndex={-1}
+                        autoComplete="off"
                       />
-                    </div>
-                    <div>
-                      <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
-                        Email
-                      </label>
-                      <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        required
-                        className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        placeholder="your.email@example.com"
-                      />
-                    </div>
-                    <div>
-                      <label htmlFor="message" className="block text-sm font-medium text-gray-300 mb-2">
-                        Message
-                      </label>
-                      <textarea
-                        id="message"
-                        name="message"
-                        value={formData.message}
-                        onChange={handleChange}
-                        required
-                        rows={5}
-                        className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                        placeholder="Tell me about your project or opportunity..."
-                      />
-                    </div>
-                    <Button
-                      type="submit"
-                      className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3"
-                    >
-                      Send Message
-                    </Button>
-                  </form>
+
+                      <div>
+                        <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">
+                          Name *
+                        </label>
+                        <input
+                          type="text"
+                          id="name"
+                          name="name"
+                          value={formData.name}
+                          onChange={handleChange}
+                          required
+                          minLength={2}
+                          maxLength={100}
+                          className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          placeholder="Your name"
+                        />
+                      </div>
+
+                      <div>
+                        <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
+                          Email *
+                        </label>
+                        <input
+                          type="email"
+                          id="email"
+                          name="email"
+                          value={formData.email}
+                          onChange={handleChange}
+                          required
+                          maxLength={255}
+                          className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          placeholder="your.email@example.com"
+                        />
+                      </div>
+
+                      <div>
+                        <label htmlFor="message" className="block text-sm font-medium text-gray-300 mb-2">
+                          Message *
+                        </label>
+                        <textarea
+                          id="message"
+                          name="message"
+                          value={formData.message}
+                          onChange={handleChange}
+                          required
+                          minLength={10}
+                          maxLength={5000}
+                          rows={5}
+                          className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                          placeholder="Tell me about your project or opportunity..."
+                        />
+                        <p className="text-xs text-gray-500 mt-1">{formData.message.length} / 5000 characters</p>
+                      </div>
+
+                      {error && (
+                        <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
+                          <p className="text-red-400 text-sm">{error}</p>
+                        </div>
+                      )}
+
+                      <Button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3"
+                      >
+                        {isSubmitting ? (
+                          <>
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            Sending...
+                          </>
+                        ) : (
+                          'Send Message'
+                        )}
+                      </Button>
+                    </form>
+                  </>
                 )}
               </CardContent>
             </Card>
