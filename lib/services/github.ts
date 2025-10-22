@@ -7,7 +7,8 @@
  * @module github-service
  */
 
-const GITHUB_USERNAME = 'chris-nattress';
+// Get GitHub username from environment or use fallback
+const GITHUB_USERNAME = process.env.NEXT_PUBLIC_GITHUB_USERNAME || 'cnattress';
 const CACHE_TTL = 60 * 60 * 1000; // 1 hour in milliseconds
 
 export interface GitHubUser {
