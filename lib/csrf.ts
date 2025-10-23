@@ -52,19 +52,30 @@ export async function generateCsrfToken(): Promise<string> {
 export async function validateCsrfToken(token: string | null): Promise<boolean> {
   // Skip CSRF validation in development for easier testing
   if (process.env.NODE_ENV !== 'production') {
+    console.log('[CSRF] Development mode - validation skipped');
     return true;
   }
 
+  console.log('[CSRF] Validating token in production mode');
+  console.log('[CSRF] Token from header:', token ? `${token.substring(0, 10)}...` : 'null');
+
   if (!token) {
-    console.error('CSRF validation failed: No token provided');
+    console.error('[CSRF] Validation failed: No token provided in header');
     return false;
   }
 
   const cookieStore = await cookies();
   const cookieToken = cookieStore.get(CSRF_TOKEN_COOKIE)?.value;
 
+  console.log('[CSRF] Token from cookie:', cookieToken ? `${cookieToken.substring(0, 10)}...` : 'null');
+  console.log('[CSRF] Cookie name:', CSRF_TOKEN_COOKIE);
+
+  // Also check all cookies for debugging
+  const allCookies = cookieStore.getAll();
+  console.log('[CSRF] All cookies:', allCookies.map(c => c.name).join(', '));
+
   if (!cookieToken) {
-    console.error('CSRF validation failed: No cookie token found');
+    console.error('[CSRF] Validation failed: No cookie token found');
     return false;
   }
 
@@ -72,7 +83,11 @@ export async function validateCsrfToken(token: string | null): Promise<boolean> 
   const isValid = token === cookieToken;
 
   if (!isValid) {
-    console.error('CSRF validation failed: Token mismatch');
+    console.error('[CSRF] Validation failed: Token mismatch');
+    console.error('[CSRF] Header token length:', token.length);
+    console.error('[CSRF] Cookie token length:', cookieToken.length);
+  } else {
+    console.log('[CSRF] Validation successful');
   }
 
   return isValid;
